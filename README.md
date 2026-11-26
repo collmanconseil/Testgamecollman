@@ -1,31 +1,42 @@
-# Luciole
+# Mini Arcade
 
-Petit jeu Android de labyrinthe : guidez une luciole dans un jardin de haies,
-ramassez tout le pollen et évitez les araignées. Les fleurs de nectar rendent
-la luciole flamboyante pendant quelques secondes : les araignées prennent peur
-et peuvent être renvoyées au nid.
+Application Android regroupant deux petits jeux originaux, avec un menu d'accueil.
 
-## Commandes
+## Luciole (labyrinthe)
+
+Guidez une luciole dans un jardin de haies, ramassez tout le pollen et évitez
+les araignées. Les fleurs de nectar effraient les araignées quelques secondes :
+on peut alors les renvoyer au nid.
 
 - **Glisser** le doigt : changer de direction
-- **Toucher** l'écran : pause / reprise, ou rejouer après une partie terminée
+- **Toucher** l'écran : pause / reprise, ou rejouer
+
+## Bip et les rouages (plateforme rétro)
+
+Jeu de plateforme 2D dans le style des micro-ordinateurs 8 bits. Le robot Bip
+traverse trois niveaux, récupère les rouages, saute sur les robots ennemis et
+rejoint la porte verte. Les pointes et le vide sont mortels.
+
+- Boutons **<** et **>** en bas à gauche : courir
+- Moitié droite de l'écran : sauter (appui long = saut plus haut)
+- **II** en haut au centre : pause
+
+## Télécharger
+
+Chaque push déclenche le workflow GitHub Actions « Android build », qui publie
+l'APK en téléchargement direct :
+https://github.com/collmanconseil/Testgamecollman/releases/latest/download/luciole.apk
 
 ## Compiler
 
-Ouvrir le dossier dans Android Studio, ou en ligne de commande :
-
 ```
 ./gradlew assembleDebug        # APK dans app/build/outputs/apk/debug/
-./gradlew testDebugUnitTest    # tests du moteur de jeu
+./gradlew testDebugUnitTest    # tests des moteurs de jeu
 ```
-
-Chaque push déclenche aussi le workflow GitHub Actions « Android build », qui
-publie l'APK en téléchargement direct :
-https://github.com/collmanconseil/Testgamecollman/releases/latest/download/luciole.apk
 
 ## Organisation
 
-- `app/src/main/java/.../engine/` : règles du jeu en Kotlin pur (labyrinthe,
-  déplacements, araignées), sans dépendance Android
-- `GameView.kt` : rendu Canvas et gestes tactiles
-- `MainActivity.kt` : activité plein écran
+- `engine/` : règles de Luciole en Kotlin pur
+- `platformer/` : niveaux, physique et règles de Bip (Kotlin pur), plus sa vue
+- `GameView.kt`, `PlatformView.kt` : rendu Canvas et commandes tactiles
+- `MainActivity.kt` : menu d'accueil
