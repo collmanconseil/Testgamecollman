@@ -20,7 +20,8 @@ Ouvrir le dossier dans Android Studio, ou en ligne de commande :
 ```
 
 Chaque push déclenche aussi le workflow GitHub Actions « Android build », qui
-publie l'APK de debug en artefact (`luciole-debug-apk`).
+publie l'APK en téléchargement direct :
+https://github.com/collmanconseil/Testgamecollman/releases/latest/download/luciole.apk
 
 ## Organisation
 

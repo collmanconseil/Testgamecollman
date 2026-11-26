@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,3 +25,13 @@ jobs:
         with:
           name: luciole-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publier l'APK en téléchargement direct
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk luciole.apk
+          gh release delete apk --yes --cleanup-tag || true
+          gh release create apk luciole.apk \
+            --target "$GITHUB_SHA" \
+            --title "Luciole (dernière version)" \
+            --notes "APK de test, reconstruit à chaque modification."
