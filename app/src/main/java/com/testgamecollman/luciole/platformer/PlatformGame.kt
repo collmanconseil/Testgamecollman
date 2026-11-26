@@ -42,6 +42,9 @@ class PlatformGame {
     var right = false
     var jump = false
     private var prevJump = false
+
+    /** Appelé avec un des codes SND_* quand un bruitage doit être joué. */
+    var onSound: (Int) -> Unit = {}
     private var scoreAtLevelStart = 0
 
     init {
@@ -121,6 +124,7 @@ class PlatformGame {
         stateTimer = DYING_TIME
         hero.vy = -9f
         hero.vx = 0f
+        onSound(SND_DIE)
     }
 
     private fun step(dt: Float) {
@@ -128,10 +132,12 @@ class PlatformGame {
         val pressed = jump && !prevJump
         prevJump = jump
         val prevBottom = hero.y + Physics.H
+        val prevVy = hero.vy
         if (!Physics.step(level, hero, dir, jump, pressed, dt)) {
             die()
             return
         }
+        if (hero.vy < -Physics.JUMP * 0.9f && prevVy > -Physics.JUMP * 0.5f) onSound(SND_JUMP)
 
         // Rouages.
         val x0 = floor(hero.x).toInt()
@@ -145,7 +151,10 @@ class PlatformGame {
             if (cx > hero.x - 0.25f && cx < hero.x + Physics.W + 0.25f &&
                 cy > hero.y - 0.25f && cy < hero.y + Physics.H + 0.25f &&
                 level.gears.remove(level.index(tx, ty))
-            ) score += 100
+            ) {
+                score += 100
+                onSound(SND_GEAR)
+            }
         }
 
         // Ennemis.
@@ -158,6 +167,7 @@ class PlatformGame {
             if (hero.vy > 0f && prevBottom <= e.y + Enemy.H * 0.6f) {
                 e.alive = false
                 score += 200
+                onSound(SND_STOMP)
                 hero.vy = if (jump) -Physics.JUMP else -9f
             } else {
                 die()
@@ -170,6 +180,7 @@ class PlatformGame {
             if (level.gears.isEmpty()) score += 1000
             state = State.LEVEL_CLEAR
             stateTimer = CLEAR_TIME
+            onSound(SND_CLEAR)
         }
     }
 
@@ -192,5 +203,10 @@ class PlatformGame {
         const val DYING_TIME = 1.2f
         const val CLEAR_TIME = 1.5f
         const val WALKER_SPEED = 2f
+        const val SND_JUMP = 0
+        const val SND_GEAR = 1
+        const val SND_STOMP = 2
+        const val SND_DIE = 3
+        const val SND_CLEAR = 4
     }
 }

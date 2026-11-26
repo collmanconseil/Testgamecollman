@@ -11,6 +11,7 @@ import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowInsets
+import com.testgamecollman.luciole.ChipAudio
 import kotlin.math.floor
 import kotlin.math.min
 
@@ -18,6 +19,7 @@ import kotlin.math.min
 class PlatformView(context: Context) : View(context) {
 
     private val game = PlatformGame()
+    private val audio = ChipAudio(ChipAudio.BIP_THEME)
     private val prefs = context.getSharedPreferences("bip", Context.MODE_PRIVATE)
     private var best = prefs.getInt("best", 0)
 
@@ -93,7 +95,20 @@ class PlatformView(context: Context) : View(context) {
 
     // --- Cycle de vie ---
 
+    init {
+        game.onSound = {
+            when (it) {
+                PlatformGame.SND_JUMP -> audio.sfx(330f, 760f, 0.11f)
+                PlatformGame.SND_GEAR -> audio.sfx(990f, 1480f, 0.07f)
+                PlatformGame.SND_STOMP -> audio.sfx(520f, 130f, 0.13f)
+                PlatformGame.SND_DIE -> audio.sfx(620f, 70f, 0.7f)
+                PlatformGame.SND_CLEAR -> audio.sfx(520f, 1560f, 0.5f)
+            }
+        }
+    }
+
     fun resume() {
+        audio.start()
         running = true
         lastNanos = 0L
         invalidate()
@@ -101,6 +116,7 @@ class PlatformView(context: Context) : View(context) {
 
     fun pause() {
         running = false
+        audio.stop()
         game.pause()
         releaseControls()
         saveBest()
@@ -164,6 +180,7 @@ class PlatformView(context: Context) : View(context) {
         lastNanos = now
         if (running) {
             game.update(dt)
+            audio.musicOn = game.state == PlatformGame.State.PLAYING || game.state == PlatformGame.State.LEVEL_CLEAR
             if (game.state == PlatformGame.State.GAME_OVER || game.state == PlatformGame.State.WON) saveBest()
         }
 

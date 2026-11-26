@@ -22,6 +22,7 @@ import kotlin.math.sin
 class GameView(context: Context) : View(context) {
 
     private val game = Game()
+    private val audio = ChipAudio(null)
     private val prefs = context.getSharedPreferences("luciole", Context.MODE_PRIVATE)
     private var best = prefs.getInt("best", 0)
 
@@ -51,7 +52,20 @@ class GameView(context: Context) : View(context) {
     private var swiped = false
     private val swipeThreshold = 18f * resources.displayMetrics.density
 
+    init {
+        game.onSound = {
+            when (it) {
+                Game.SND_POLLEN -> audio.sfx(700f, 880f, 0.035f)
+                Game.SND_NECTAR -> audio.sfx(300f, 980f, 0.25f)
+                Game.SND_CHASE -> audio.sfx(240f, 1200f, 0.2f)
+                Game.SND_DIE -> audio.sfx(620f, 70f, 0.7f)
+                Game.SND_CLEAR -> audio.sfx(520f, 1560f, 0.5f)
+            }
+        }
+    }
+
     fun resume() {
+        audio.start()
         running = true
         lastNanos = 0L
         invalidate()
@@ -59,6 +73,7 @@ class GameView(context: Context) : View(context) {
 
     fun pause() {
         running = false
+        audio.stop()
         game.pause()
         saveBest()
     }

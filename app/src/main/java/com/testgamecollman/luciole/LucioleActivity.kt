@@ -15,6 +15,7 @@ class LucioleActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        volumeControlStream = android.media.AudioManager.STREAM_MUSIC
         gameView = GameView(this)
         setContentView(gameView)
         hideSystemBars()

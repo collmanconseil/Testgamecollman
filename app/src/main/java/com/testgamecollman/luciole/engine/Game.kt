@@ -58,6 +58,9 @@ class Game(private val rng: Random = Random.Default) {
     var time = 0f
         private set
 
+    /** Appelé avec un des codes SND_* quand un bruitage doit être joué. */
+    var onSound: (Int) -> Unit = {}
+
     private var wanted = Dir.NONE
     private var combo = 0
 
@@ -199,6 +202,7 @@ class Game(private val rng: Random = Random.Default) {
             if (dx * dx + dy * dy < 0.5f) {
                 if (s.frightened) {
                     combo++
+                    onSound(SND_CHASE)
                     score += 100 * (1 shl combo.coerceAtMost(4))
                     val (nx, ny) = maze.nest[maze.nest.size / 2]
                     s.place(nx, ny)
@@ -207,6 +211,7 @@ class Game(private val rng: Random = Random.Default) {
                     s.wait = 3f
                 } else {
                     enter(State.DYING, DYING_TIME)
+                    onSound(SND_DIE)
                     return
                 }
             }
@@ -245,9 +250,13 @@ class Game(private val rng: Random = Random.Default) {
 
     private fun onPlayerArrive() {
         when (maze.collect(player.x, player.y)) {
-            '.' -> score += 10
+            '.' -> {
+                score += 10
+                onSound(SND_POLLEN)
+            }
             'o' -> {
                 score += 50
+                onSound(SND_NECTAR)
                 frightTimer = frightDuration
                 combo = 0
                 for (s in spiders) if (s.mode != SpiderMode.WAITING) {
@@ -256,7 +265,10 @@ class Game(private val rng: Random = Random.Default) {
                 }
             }
         }
-        if (maze.pollenLeft == 0) enter(State.LEVEL_CLEAR, CLEAR_TIME)
+        if (maze.pollenLeft == 0) {
+            enter(State.LEVEL_CLEAR, CLEAR_TIME)
+            onSound(SND_CLEAR)
+        }
     }
 
     private fun chooseSpiderDir(s: Spider) {
@@ -297,5 +309,10 @@ class Game(private val rng: Random = Random.Default) {
         const val READY_TIME = 1.5f
         const val DYING_TIME = 1.2f
         const val CLEAR_TIME = 1.8f
+        const val SND_POLLEN = 0
+        const val SND_NECTAR = 1
+        const val SND_CHASE = 2
+        const val SND_DIE = 3
+        const val SND_CLEAR = 4
     }
 }

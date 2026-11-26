@@ -21,6 +21,9 @@ rejoint la porte verte. Les pointes et le vide sont mortels.
 - Moitié droite de l'écran : sauter (appui long = saut plus haut)
 - **II** en haut au centre : pause
 
+Musique et bruitages sont synthétisés par le programme (ondes carrées), comme
+sur les machines de l'époque. Le volume se règle avec les touches du téléphone.
+
 ## Télécharger
 
 Chaque push déclenche le workflow GitHub Actions « Android build », qui publie
