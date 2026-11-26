@@ -57,7 +57,7 @@ class PlatformTest {
             for ((x, y) in level.walkerSpawns) {
                 assertTrue("niveau ${i + 1}: robot en ($x,$y) sans sol", level.standable(x, y + 1))
             }
-            assertTrue("niveau ${i + 1}: des rouages", level.gearTotal > 0)
+            assertTrue("niveau ${i + 1}: des trésors", level.gearTotal > 0)
             val ok = solvable(level)
             assertTrue("niveau ${i + 1} infaisable (bloqué vers x=$far)", ok)
         }

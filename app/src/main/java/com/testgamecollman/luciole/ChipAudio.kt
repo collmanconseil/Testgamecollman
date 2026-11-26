@@ -182,7 +182,7 @@ class ChipAudio(private val song: Song?) {
         private const val B4 = 71; private const val C5 = 72; private const val D5 = 74; private const val E5 = 76
         private const val F5 = 77; private const val G5 = 79; private const val A5 = 81; private const val C6 = 84
 
-        /** Air original de Bip : huit mesures en do majeur (do, la mineur, fa, sol). */
+        /** Air original du jeu de plateforme : huit mesures en do majeur (do, la mineur, fa, sol). */
         val BIP_THEME: Song by lazy {
             Song(
                 bpm = 138,

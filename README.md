@@ -11,11 +11,12 @@ on peut alors les renvoyer au nid.
 - **Glisser** le doigt : changer de direction
 - **Toucher** l'écran : pause / reprise, ou rejouer
 
-## Bip et les rouages (plateforme rétro)
+## Max l'explorateur (plateforme rétro)
 
-Jeu de plateforme 2D dans le style des micro-ordinateurs 8 bits. Le robot Bip
-traverse trois niveaux, récupère les rouages, saute sur les robots ennemis et
-rejoint la porte verte. Les pointes et le vide sont mortels.
+Jeu de plateforme 2D dans le style des micro-ordinateurs 8 bits. Max traverse
+la jungle, une grotte puis un temple : il ramasse les trésors, saute sur les
+serpents et les chauves-souris et rejoint la porte dorée. Les pieux et le vide
+sont mortels.
 
 - Boutons **<** et **>** en bas à gauche : courir
 - Moitié droite de l'écran : sauter (appui long = saut plus haut)
@@ -40,6 +41,6 @@ https://github.com/collmanconseil/Testgamecollman/releases/latest/download/lucio
 ## Organisation
 
 - `engine/` : règles de Luciole en Kotlin pur
-- `platformer/` : niveaux, physique et règles de Bip (Kotlin pur), plus sa vue
+- `platformer/` : niveaux, physique et règles de Max (Kotlin pur), plus sa vue
 - `GameView.kt`, `PlatformView.kt` : rendu Canvas et commandes tactiles
 - `MainActivity.kt` : menu d'accueil

@@ -20,7 +20,7 @@ class PlatformView(context: Context) : View(context) {
 
     private val game = PlatformGame()
     private val audio = ChipAudio(ChipAudio.BIP_THEME)
-    private val prefs = context.getSharedPreferences("bip", Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences("explorateur", Context.MODE_PRIVATE)
     private var best = prefs.getInt("best", 0)
 
     private var running = false
@@ -43,6 +43,7 @@ class PlatformView(context: Context) : View(context) {
     private val palette = mapOf(
         'k' to Color.BLACK, 'w' to Color.WHITE, 'y' to YELLOW, 'c' to CYAN, 'b' to BLUE,
         'r' to RED, 'm' to MAGENTA, 'g' to GREEN, 'o' to ORANGE, 'd' to DARK,
+        'n' to BROWN, 's' to SKIN, 'h' to KHAKI, 'a' to STONE, 'e' to LEAF,
     )
 
     private fun sprite(rows: List<String>, swap: Map<Char, Int> = emptyMap()): Bitmap {
@@ -59,38 +60,47 @@ class PlatformView(context: Context) : View(context) {
         "ooookooo", "ooookooo", "ooookooo", "kkkkkkkk",
         "okoooooo", "okoooooo", "okoooooo", "kkkkkkkk",
     )
-    private val bricks = listOf(
-        sprite(brickRows),
-        sprite(brickRows, mapOf('o' to BLUE)),
-        sprite(brickRows, mapOf('o' to MAGENTA)),
+    private val earth = sprite(
+        listOf("nnnnnnnn", "nnknnnnn", "nnnnnnkn", "nnnnnnnn", "nknnnnnn", "nnnnnknn", "nnnnnnnn", "nnnknnnn")
     )
+    private val grass = sprite(
+        listOf("gggggggg", "geggggeg", "eenegene", "nnnnnnnn", "nknnnnnn", "nnnnnknn", "nnnnnnnn", "nnnknnnn")
+    )
+    private val stone = sprite(brickRows, mapOf('o' to STONE))
+    private val temple = sprite(brickRows)
+
+    /** Par niveau : tuile de surface, tuile intérieure (jungle, grotte, temple). */
+    private val grounds = listOf(grass to earth, stone to stone, temple to temple)
+
     private val bridge = sprite(
-        listOf("yyyyyyyy", "ykykykyk", "dddddddd", "........", "........", "........", "........", "........")
+        listOf("nnnnnnnn", "nknnnknn", "dddddddd", "........", "........", "........", "........", "........")
     )
     private val spikes = sprite(
         listOf("........", "........", "........", ".w...w..", ".w...w..", "www.www.", "www.www.", "wwwwwww.")
     )
     private val gear = sprite(
-        listOf("..y..y..", ".yyyyyy.", "yyy..yyy", ".y....y.", ".y....y.", "yyy..yyy", ".yyyyyy.", "..y..y..")
+        listOf("........", "..cccc..", ".cwcccc.", "cccccccc", ".cccccc.", "..cccc..", "...cc...", "........")
     )
     private val door = sprite(
-        listOf("gggggggg", "gddddddg", "gddddddg", "gddddddg", "gddddddg", "gddddddg", "gddddddg", "gddddddg") +
-            listOf("gdddddyg", "gdddddyg", "gddddddg", "gddddddg", "gddddddg", "gddddddg", "gddddddg", "gddddddg")
+        listOf("..yyyy..", ".yyyyyy.", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy") +
+            listOf("yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy", "yykkkkyy")
     )
+    // L'explorateur : chapeau, chemise kaki, sac à dos.
     private val heroTop = listOf(
-        "...rr...", ".cccccc.", ".cwkcwk.", ".cccccc.", "..cccc..", ".bbbbbb.", "bbbbbbbb", ".bbbbbb.",
+        "..nnnn..", "nnnnnnnn", "..ssks..", "..ssss..", ".dhhhh..", ".dhhhhs.", ".dhhhh..", "..bbbb..",
     )
     private val heroFrames = listOf(
-        sprite(heroTop + listOf("..b..b..", ".ww..ww.")),
-        sprite(heroTop + listOf(".b....b.", "ww....ww")),
+        sprite(heroTop + listOf("..b..b..", ".nn..nn.")),
+        sprite(heroTop + listOf(".b....b.", "nn....nn")),
     )
+    // Serpent (au sol) et chauve-souris (en vol).
     private val walkerFrames = listOf(
-        sprite(listOf("........", "..rrrr..", ".rrrrrr.", "rwkrrwkr", "rrrrrrrr", "rrrrrrrr", ".r.rr.r.", "r..rr..r")),
-        sprite(listOf("........", "..rrrr..", ".rrrrrr.", "rwkrrwkr", "rrrrrrrr", "rrrrrrrr", ".r.rr.r.", ".r.rr.r.")),
+        sprite(listOf("........", "........", ".gg.....", "gkgg....", "gggg..gg", "..gggggg", "...gggg.", "........")),
+        sprite(listOf("........", "........", ".gg.....", "gkgg....", "gggg....", "..gggggg", "...ggggg", "........")),
     )
     private val hoverFrames = listOf(
-        sprite(listOf("m......m", ".mmmmmm.", "mmmmmmmm", "mwkmmwkm", "mmmmmmmm", ".mmmmmm.", "..m..m..", "........")),
-        sprite(listOf("........", "mmmmmmmm", "mmmmmmmm", "mwkmmwkm", "mmmmmmmm", ".mmmmmm.", "..m..m..", "........")),
+        sprite(listOf("m......m", "mm.mm.mm", "mmmmmmmm", ".mwmmwm.", "..mmmm..", "...mm...", "........", "........")),
+        sprite(listOf("........", "...mm...", "mmmmmmmm", "mmwmmwmm", "m.mmmm.m", "...mm...", "........", "........")),
     )
 
     // --- Cycle de vie ---
@@ -221,7 +231,7 @@ class PlatformView(context: Context) : View(context) {
     }
 
     private fun drawWorld(canvas: Canvas, level: Level, viewTiles: Float) {
-        val brick = bricks[game.levelIndex % bricks.size]
+        val (surface, inner) = grounds[game.levelIndex % grounds.size]
         val x0 = floor(camX).toInt()
         val x1 = floor(camX + viewTiles).toInt() + 1
 
@@ -240,7 +250,7 @@ class PlatformView(context: Context) : View(context) {
 
         for (y in 0 until level.height) for (x in x0..x1) {
             when (level.tile(x, y)) {
-                '#' -> blit(canvas, brick, x.toFloat(), y.toFloat(), 1f, 1f)
+                '#' -> blit(canvas, if (level.tile(x, y - 1) == '#') inner else surface, x.toFloat(), y.toFloat(), 1f, 1f)
                 '=' -> blit(canvas, bridge, x.toFloat(), y.toFloat(), 1f, 1f)
                 '^' -> blit(canvas, spikes, x.toFloat(), y.toFloat(), 1f, 1f)
             }
@@ -301,7 +311,7 @@ class PlatformView(context: Context) : View(context) {
         text.color = CYAN
         text.textAlign = Paint.Align.CENTER
         val gears = game.level.gearTotal - game.level.gears.size
-        canvas.drawText("II   ROUAGES $gears/${game.level.gearTotal}", width / 2f, y, text)
+        canvas.drawText("II   TRESORS $gears/${game.level.gearTotal}", width / 2f, y, text)
         text.color = GREEN
         text.textAlign = Paint.Align.RIGHT
         canvas.drawText(
@@ -349,5 +359,10 @@ class PlatformView(context: Context) : View(context) {
         val GREEN = 0xFF4DFF6A.toInt()
         val ORANGE = 0xFFFF9A2E.toInt()
         val DARK = 0xFF2A2A4A.toInt()
+        val BROWN = 0xFF8B5A2B.toInt()
+        val SKIN = 0xFFFFC08A.toInt()
+        val KHAKI = 0xFFD8C36A.toInt()
+        val STONE = 0xFF7F8399.toInt()
+        val LEAF = 0xFF1F9E3C.toInt()
     }
 }

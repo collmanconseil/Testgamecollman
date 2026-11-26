@@ -32,7 +32,7 @@ class MainActivity : Activity() {
             setPadding(0, 0, 0, (40 * dp).toInt())
         })
         root.addView(entry("Luciole", "Labyrinthe : ramassez le pollen, évitez les araignées", 0xFF2F9E52.toInt(), LucioleActivity::class.java))
-        root.addView(entry("Bip et les rouages", "Plateforme rétro : sautez, récupérez les rouages", 0xFF3D6BFF.toInt(), PlatformActivity::class.java))
+        root.addView(entry("Max l'explorateur", "Plateforme rétro : jungle, grotte et temple aux trésors", 0xFF8B5A2B.toInt(), PlatformActivity::class.java))
         setContentView(root)
     }
 

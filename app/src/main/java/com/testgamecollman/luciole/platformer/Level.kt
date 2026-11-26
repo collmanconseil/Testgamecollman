@@ -2,8 +2,8 @@ package com.testgamecollman.luciole.platformer
 
 /**
  * Niveau en tuiles : '#' bloc, '=' passerelle (on la traverse par dessous),
- * '^' pointes, 'o' rouage, 'S' départ, 'D' porte de sortie,
- * 'E' robot patrouilleur, 'V' drone volant, '.' vide.
+ * '^' pieux, 'o' trésor, 'S' départ, 'D' porte de sortie,
+ * 'E' serpent, 'V' chauve-souris, '.' vide.
  */
 class Level(src: List<String>) {
     val height = src.size
